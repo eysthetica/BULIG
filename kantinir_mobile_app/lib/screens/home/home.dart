@@ -4,6 +4,9 @@ import 'package:kantinir_mobile_app/services/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import '../food_page/foodPage.dart';
+import '../housing_page/housingPage.dart';
+import 'home_content.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,11 +18,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final AuthService _auth = AuthService();
 
-  int currentIndex = 0;
+  int currentIndex = 1;
   final screens = [
-    //Page(),
-    //Page(),
-    //Options(),
+    FoodPage(),
+    Home_contentPage(),
+    HousingPage(),
   ];
 
   @override
@@ -43,68 +46,72 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Container(
-              height: 500,
-              child: StreamBuilder(
-                stream: _kaon.snapshots(),
-                builder: (context, AsyncSnapshot snapshots) {
-                  if (snapshots.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(color: Colors.green),
-                    );
-                  }
-                  if (snapshots.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshots.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        final DocumentSnapshot records =
-                            snapshots.data!.docs[index];
-                        return Slidable(
-                          startActionPane:
-                              ActionPane(motion: StretchMotion(), children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                navigateToNewPage(context);
-                              },
-                              icon: Icons.phone,
-                              backgroundColor: Colors.blue,
-                            )
-                          ]),
-                          child: ListTile(
-                            title: Text(records["name"]),
-                            subtitle: Text(records["owner"] +
-                                '\n' +
-                                (records["fb link"]) +
-                                '\n' +
-                                (records["location"])),
-                          ),
-                        );
-                      },
-                    );
-                  }
-                  return Center(
-                    child: CircularProgressIndicator(color: Colors.red),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      // body: Center(
+      //   child: Column(
+      //     children: [
+      //       Container(
+      //         height: 500,
+      //         child: StreamBuilder(
+      //           stream: _kaon.snapshots(),
+      //           builder: (context, AsyncSnapshot snapshots) {
+      //             if (snapshots.connectionState == ConnectionState.waiting) {
+      //               return Center(
+      //                 child: CircularProgressIndicator(color: Colors.green),
+      //               );
+      //             }
+      //             if (snapshots.hasData) {
+      //               return ListView.builder(
+      //                 itemCount: snapshots.data!.docs.length,
+      //                 itemBuilder: (context, index) {
+      //                   final DocumentSnapshot records =
+      //                       snapshots.data!.docs[index];
+      //                   return Slidable(
+      //                     startActionPane:
+      //                         ActionPane(motion: StretchMotion(), children: [
+      //                       // SlidableAction(
+      //                       //   onPressed: (context) {
+      //                       //     navigateToNewPage(context);
+      //                       //   },
+      //                       //   icon: Icons.phone,
+      //                       //   backgroundColor: Colors.blue,
+      //                       // )
+      //                     ]),
+      //                     child: ListTile(
+      //                       title: Text(records["name"]),
+      //                       subtitle: Text(records["owner"] +
+      //                           '\n' +
+      //                           (records["fb link"]) +
+      //                           '\n' +
+      //                           (records["location"])),
+      //                     ),
+      //                   );
+      //                 },
+      //               );
+      //             }
+      //             return Center(
+      //               child: CircularProgressIndicator(color: Colors.red),
+      //             );
+      //           },
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      body: IndexedStack(
+        index: currentIndex,
+        children: screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) => setState(() => currentIndex = index),
         items: const [
-          //BottomNavigationBarItem(label: "Sensor", icon: Icon(Icons.sensors)),
+          BottomNavigationBarItem(label: "Food", icon: Icon(Icons.sensors)),
           BottomNavigationBarItem(
             label: "Home",
             icon: Icon(Icons.home),
           ),
           BottomNavigationBarItem(
-            label: 'Food and Housing',
+            label: 'Housing',
             icon: Icon(Icons.inventory),
           )
         ],
